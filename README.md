@@ -59,4 +59,4 @@ The app consumes `GET https://ghibliapi.vercel.app/films` and optionally `GET /f
 
 ## License
 
-This project is provided as-is for educational purposes.
+This project was created for educational purposes! Huge shoutout to @deywersonp for the Ghibli API (https://github.com/deywersonp/ghibliapi?tab=readme-ov-file) :P
