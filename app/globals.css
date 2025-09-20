@@ -1,0 +1,123 @@
+@import 'tailwindcss';
+
+:root {
+  --color-forest-900: #0f2a27;
+  --color-forest-800: #1d4d44;
+  --color-forest-700: #275a4f;
+  --color-forest-600: #35603b;
+  --color-forest-500: #4e7341;
+  --color-forest-400: #8ba761;
+  --color-sky-400: #7fbac1;
+  --color-sky-300: #9dcad2;
+  --color-cloud: #f4f8f6;
+  --color-ink: #061815;
+
+  --surface-backdrop:
+    radial-gradient(circle at 20% 20%, rgba(127, 186, 193, 0.08), transparent 55%),
+    radial-gradient(circle at 80% 0%, rgba(139, 167, 97, 0.1), transparent 50%),
+    linear-gradient(
+      160deg,
+      rgba(15, 42, 39, 1) 0%,
+      rgba(29, 77, 70, 1) 65%,
+      rgba(53, 96, 59, 0.92) 100%
+    );
+  --surface-panel: rgba(21, 58, 53, 0.85);
+  --surface-card: rgba(29, 77, 70, 0.8);
+  --surface-soft: rgba(53, 96, 59, 0.75);
+  --surface-mute: rgba(15, 42, 39, 0.6);
+
+  --text-primary: #e9f3ee;
+  --text-muted: rgba(233, 243, 238, 0.72);
+  --text-inverse: #0a221e;
+
+  --border-soft: rgba(127, 186, 193, 0.35);
+  --border-strong: rgba(139, 167, 97, 0.55);
+
+  --shadow-accent: 0 18px 36px rgba(127, 186, 193, 0.18);
+
+  --font-heading: var(--font-heading);
+  --font-body: var(--font-body);
+}
+
+body {
+  background: var(--surface-backdrop);
+  color: var(--text-primary);
+  font-family: var(--font-body), 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading), 'Times New Roman', serif;
+  font-style: italic;
+  letter-spacing: 0.01em;
+  color: var(--text-primary);
+}
+
+a {
+  color: var(--color-sky-400);
+}
+
+a:hover {
+  color: var(--color-forest-400);
+}
+
+.surface-panel {
+  background-color: var(--surface-panel);
+}
+
+.surface-card {
+  background-color: var(--surface-card);
+}
+
+.surface-soft {
+  background-color: var(--surface-soft);
+}
+
+.surface-mute {
+  background-color: var(--surface-mute);
+}
+
+.text-forest-muted {
+  color: var(--text-muted);
+}
+
+.text-forest-primary {
+  color: var(--text-primary);
+}
+
+.border-forest-soft {
+  border-color: var(--border-soft);
+}
+
+.border-forest-strong {
+  border-color: var(--border-strong);
+}
+
+.btn-accent {
+  background: var(--color-sky-400);
+  color: var(--color-ink);
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.btn-accent:hover {
+  background: var(--color-forest-400);
+  transform: translateY(-1px);
+}
+
+.focus-ring {
+  outline: 2px solid var(--color-sky-300);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: rgba(127, 186, 193, 0.3);
+  color: var(--color-cloud);
+}
