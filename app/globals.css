@@ -35,14 +35,14 @@
 
   --shadow-accent: 0 18px 36px rgba(127, 186, 193, 0.18);
 
-  --font-heading: var(--font-heading);
-  --font-body: var(--font-body);
+  --font-heading: 'Georgia', 'Times New Roman', serif;
+  --font-body: 'Source Sans Pro', 'Helvetica Neue', Arial, sans-serif;
 }
 
 body {
   background: var(--surface-backdrop);
   color: var(--text-primary);
-  font-family: var(--font-body), 'Helvetica Neue', Arial, sans-serif;
+  font-family: var(--font-body);
   line-height: 1.6;
   min-height: 100vh;
 }
@@ -53,7 +53,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-heading), 'Times New Roman', serif;
+  font-family: var(--font-heading);
   font-style: italic;
   letter-spacing: 0.01em;
   color: var(--text-primary);

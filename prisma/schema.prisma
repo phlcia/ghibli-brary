@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  directUrl         = env("DIRECT_DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model User {
+  id           Int        @id @default(autoincrement())
+  email        String     @unique
+  passwordHash String     @map("password_hash")
+  favorites    Favorite[]
+
+  @@map("users")
+}
+
+model Film {
+  id          String     @id
+  title       String
+  director    String
+  producer    String
+  releaseYear Int        @map("release_year")
+  rtScore     Int        @map("rt_score")
+  data        Json
+  favorites   Favorite[]
+
+  @@map("films")
+  @@index([title])
+}
+
+model Favorite {
+  id     Int    @id @default(autoincrement())
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int    @map("user_id")
+  film   Film   @relation(fields: [filmId], references: [id], onDelete: Cascade)
+  filmId String @map("film_id")
+
+  @@map("favorites")
+  @@unique([userId, filmId])
+}

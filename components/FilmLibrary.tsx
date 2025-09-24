@@ -2,6 +2,8 @@
 
 import { useMemo, useCallback } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import { signOut, useSession } from 'next-auth/react';
 
 import { applyFilters, applySort, createDefaultFilters, getFilterOptions } from '@/lib/filmUtils';
 import { Film, FilmSortOption } from '@/types/film';
@@ -44,6 +46,8 @@ export function FilmLibrary({ films }: FilmLibraryProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const { status } = useSession();
+  const isAuthenticated = status === 'authenticated';
 
   const searchValue = searchParams.get('search') ?? '';
   const selectedDirectors = getArrayParam(searchParams, DIRECTOR_KEY);
@@ -176,12 +180,51 @@ export function FilmLibrary({ films }: FilmLibraryProps) {
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-6 py-8 sm:px-8 lg:px-10">
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+        <Link href="/" className="text-2xl font-semibold text-forest-primary">
+          ghibli-brary
+        </Link>
+        <div className="flex items-center gap-3 text-sm">
+          {isAuthenticated && (
+            <Link
+              href="/favorites"
+              className="rounded-full border border-forest-soft px-4 py-1.5 text-forest-primary hover:border-[color:var(--color-sky-400)]"
+            >
+              Favorites
+            </Link>
+          )}
+          {isAuthenticated ? (
+            <button
+              type="button"
+              onClick={() => signOut({ callbackUrl: '/' })}
+              className="rounded-full border border-forest-soft px-4 py-1.5 text-forest-primary hover:border-[color:var(--color-sky-400)]"
+            >
+              Sign out
+            </button>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="rounded-full border border-forest-soft px-4 py-1.5 text-forest-primary hover:border-[color:var(--color-sky-400)]"
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/register"
+                className="btn-accent rounded-full px-4 py-1.5 text-forest-primary"
+              >
+                Join
+              </Link>
+            </>
+          )}
+        </div>
+      </div>
       <header className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex-1">
           <h1 className="text-3xl font-bold text-forest-primary">ghibli-brary</h1>
           <p className="mt-2 max-w-2xl text-sm text-forest-muted">
-            Browse the Studio Ghibli catalog, refine by director, producer, release year, or
-            Rotten Tomatoes score, and sort to find your next favorite film.
+            Browse the Studio Ghibli catalog, refine by director, producer, release year, or Rotten
+            Tomatoes score, and sort to find your next favorite film.
           </p>
         </div>
         <div className="w-full max-w-md">

@@ -1,0 +1,100 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  NODE_VERSION: '20'
+  NEXTAUTH_URL: 'http://localhost:3000'
+  PLAYWRIGHT_SKIP_WEBSERVER: 1
+  NEXTAUTH_SECRET: test-secret
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: app
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/app
+      DIRECT_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/app
+      SHADOW_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/app_shadow
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Generate Prisma Client
+        run: npm run prisma:generate
+
+      - name: Run database migrations
+        run: npx prisma migrate deploy
+
+      - name: ESLint
+        run: npm run lint
+
+      - name: Prettier
+        run: npm run format
+
+      - name: Jest (unit + integration)
+        run: npm test
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/app
+          DIRECT_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/app
+          SHADOW_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/app_shadow
+          NEXTAUTH_SECRET: test-secret
+
+      - name: Playwright tests
+        run: npx playwright install --with-deps && npm run test:e2e
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/app
+          DIRECT_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/app
+          SHADOW_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/app_shadow
+          NEXTAUTH_SECRET: test-secret
+          PLAYWRIGHT_BASE_URL: http://127.0.0.1:3000
+          PLAYWRIGHT_SKIP_WEBSERVER: 0
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy backend to Render
+        env:
+          RENDER_API_TOKEN: ${{ secrets.RENDER_API_TOKEN }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer ${RENDER_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            https://api.render.com/v1/services/${RENDER_SERVICE_ID}/deploys
+
+      - name: Deploy frontend to Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          npx vercel pull --yes --environment=production --token=${VERCEL_TOKEN}
+          npx vercel deploy --prod --token=${VERCEL_TOKEN}

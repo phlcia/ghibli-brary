@@ -7,6 +7,7 @@ const config = {
     '^@/(.*)$': '<rootDir>/$1',
   },
   roots: ['<rootDir>/lib', '<rootDir>/tests'],
+  testPathIgnorePatterns: ['<rootDir>/tests/e2e/'],
   transform: {
     '^.+\\.(ts|tsx)$': ['ts-jest', { tsconfig: 'tsconfig.jest.json' }],
   },

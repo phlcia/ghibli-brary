@@ -5,15 +5,13 @@ import { notFound } from 'next/navigation';
 
 import { getFilmById } from '@/lib/ghibliApi';
 
-interface FilmPageProps {
-  params: {
-    id: string;
-  };
-}
+type PageParams = Promise<{ id: string }>;
 
-export async function generateMetadata({ params }: FilmPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: PageParams }): Promise<Metadata> {
+  const { id } = await params;
+
   try {
-    const film = await getFilmById(params.id);
+    const film = await getFilmById(id);
     return {
       title: `${film.title} • ghibli-brary`,
       description: film.description,
@@ -27,9 +25,11 @@ export async function generateMetadata({ params }: FilmPageProps): Promise<Metad
   }
 }
 
-export default async function FilmDetailPage({ params }: FilmPageProps) {
+export default async function FilmDetailPage({ params }: { params: PageParams }) {
+  const { id } = await params;
+
   try {
-    const film = await getFilmById(params.id);
+    const film = await getFilmById(id);
 
     return (
       <main className="min-h-screen pb-16">
